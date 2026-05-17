@@ -1,6 +1,7 @@
 import { getMetrics, getTransactions } from "@/lib/api";
 import type { DateRange } from "@/types";
- import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
+import { getDefaultDateRange } from "@/lib/date";
+import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
 import { TransactionsTable } from "@/components/dashboard/TransactionsTable";
 
@@ -10,12 +11,14 @@ type DashboardPageProps = {
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
-  const dateRange = (params.from && params.to)
+  const dateRange: DateRange = (params.from && params.to)
     ? { from: new Date(params.from), to: new Date(params.to) }
-    : { from: new Date("2024-01-01"), to: new Date("2024-01-31") };
+    : getDefaultDateRange();
 
   const [metrics, transactions] = await Promise.all([
-     ]);
+    getMetrics({ dateRange }),
+    getTransactions({ dateRange }),
+  ]);
 
   return (
     <div className="min-h-screen bg-background">

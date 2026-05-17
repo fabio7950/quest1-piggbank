@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatDisplayDate, isValidDateRange, exceedsMaxRange, isDateInFuture, formatUrlDate } from "@/lib/date";
 import type { DateRange } from "@/types";
-import { url } from "zod/v4/mini";
 
 type DateRangeFilterProps = {
   currentRange: DateRange;
@@ -15,19 +14,21 @@ type DateRangeFilterProps = {
 
 export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
   const router = useRouter();
-  const [fromDate, setFromDate] = useState<Date | undefined>(currentRange.from);
-  const [toDate, setToDate] = useState<Date | undefined>(currentRange.to);
+  const [fromDate, setFromDate] = useState<Date | undefined>(currentRange?.from);
+  const [toDate, setToDate] = useState<Date | undefined>(currentRange?.to);
   const [fromOpen, setFromOpen] = useState(false);
   const [toOpen, setToOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleApply = () => {
+    setError(null);
+
     if (!fromDate || !toDate) {
       setError("Selecione ambas as datas");
       return;
     }
 
-    const range = { from: fromDate, to: toDate };
+    const range: DateRange = { from: fromDate, to: toDate };
 
     if (!isValidDateRange(range)) {
       setError("Data início deve ser anterior à data fim");
@@ -43,16 +44,25 @@ export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
       setError("Datas futuras não são permitidas");
       return;
     }
-  
-  
-    setIsOpen(false);
 
-    setEror(null);
-    router.push(`?from=${formatUrlDate(fromDate as Date)}&to=${formatUrlDate(toDate as Date)}`);
+    setFromOpen(false);
+    setToOpen(false);
 
+    const params = new URLSearchParams();
+    params.set("from", formatUrlDate(fromDate));
+    params.set("to", formatUrlDate(toDate));
 
+    // navigate keeping pathname
+    const pathname = typeof window !== "undefined" ? window.location.pathname : "/dashboard";
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
-
+  const handleClear = () => {
+    setFromDate(undefined);
+    setToDate(undefined);
+    setError(null);
+    const pathname = typeof window !== "undefined" ? window.location.pathname : "/dashboard";
+    router.push(pathname);
   };
 
   return (
@@ -101,6 +111,10 @@ export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
 
       <Button onClick={handleApply} size="sm">
         Aplicar
+      </Button>
+
+      <Button variant="ghost" onClick={handleClear} size="sm">
+        Limpar
       </Button>
 
       {error && (
