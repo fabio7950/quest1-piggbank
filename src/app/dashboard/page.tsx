@@ -1,4 +1,4 @@
-import { getMetrics, getTransactions } from "@/lib/api";
+import { getTransactions, getMetrics } from "@/lib/api";
 import type { DateRange } from "@/types";
 import { getDefaultDateRange } from "@/lib/date";
 import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
@@ -20,6 +20,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     getTransactions({ dateRange }),
   ]);
 
+  // CORREÇÃO AQUI: Encontra cada métrica individual dentro da lista (Array) retornada pela API
+  const balanceMetric = metrics.find(m => m.label.toLowerCase().includes("saldo")) || { label: "Saldo Atual", value: 0, currency: true };
+  const incomeMetric = metrics.find(m => m.label.toLowerCase().includes("receita")) || { label: "Receitas", value: 0, currency: true };
+  const expenseMetric = metrics.find(m => m.label.toLowerCase().includes("despesa")) || { label: "Despesas", value: 0, currency: true };
+
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b border-border">
@@ -34,21 +39,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </nav>
 
       <main className="mx-auto max-w-7xl p-8">
-  <div className="mb-8 flex items-center justify-between">
-    <h1 className="text-2xl font-bold text-foreground">
-      Dashboard
-    </h1>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">
+            Dashboard
+          </h1>
+          <DateRangeFilter currentRange={dateRange} />
+        </div>
 
-    <DateRangeFilter currentRange={dateRange} />
-  </div>
+        {/* Renderiza os cards usando as variáveis corrigidas acima */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <MetricsCard metric={balanceMetric} />
+          <MetricsCard metric={incomeMetric} />
+          <MetricsCard metric={expenseMetric} />
+        </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <MetricsCard metrics={metrics} />
-  </div>
-
-  <div className="rounded-xl border border-border bg-card">
-    <TransactionsTable transactions={transactions} />
-  </div>
-</main>
+        <div className="rounded-xl border border-border bg-card">
+          <TransactionsTable transactions={transactions} />
+        </div>
+      </main>
+    </div>
   );
 }

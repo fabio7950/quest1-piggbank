@@ -52,7 +52,6 @@ export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
     params.set("from", formatUrlDate(fromDate));
     params.set("to", formatUrlDate(toDate));
 
-    // navigate keeping pathname
     const pathname = typeof window !== "undefined" ? window.location.pathname : "/dashboard";
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -69,10 +68,9 @@ export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-1">
         <Popover open={fromOpen} onOpenChange={setFromOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              {fromDate ? formatDisplayDate(fromDate) : "Data início"}
-            </Button>
+          {/* Removido o asChild e o <Button> duplicado daqui */}
+          <PopoverTrigger className="inline-flex shrink-0 items-center justify-center rounded-md text-sm font-medium border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            {fromDate ? formatDisplayDate(fromDate) : "Data início"}
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
@@ -87,13 +85,12 @@ export function DateRangeFilter({ currentRange }: DateRangeFilterProps) {
           </PopoverContent>
         </Popover>
 
-        <span className="text-muted-foreground">até</span>
+        <span className="text-muted-foreground text-sm px-1">até</span>
 
         <Popover open={toOpen} onOpenChange={setToOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              {toDate ? formatDisplayDate(toDate) : "Data fim"}
-            </Button>
+          {/* Removido o asChild e o <Button> duplicado daqui também */}
+          <PopoverTrigger className="inline-flex shrink-0 items-center justify-center rounded-md text-sm font-medium border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            {toDate ? formatDisplayDate(toDate) : "Data fim"}
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
