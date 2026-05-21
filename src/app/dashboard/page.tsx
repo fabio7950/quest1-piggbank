@@ -2,6 +2,7 @@ import { getTransactions, getMetrics } from "@/lib/api";
 import type { DateRange } from "@/types";
 import { getDefaultDateRange } from "@/lib/date";
 import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
 import { TransactionsTable } from "@/components/dashboard/TransactionsTable";
 
@@ -39,10 +40,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </nav>
 
       <main className="mx-auto max-w-7xl p-8">
+        <DashboardHeader />
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">
-            Dashboard
-          </h1>
           <DateRangeFilter currentRange={dateRange} />
         </div>
 
