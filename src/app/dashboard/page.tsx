@@ -4,6 +4,7 @@ import { getDefaultDateRange } from "@/lib/date";
 import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
 import { TransactionsTable } from "@/components/dashboard/TransactionsTable";
+import { ExportarTransacoes } from "@/components/dashboard/ExportarTransacoes";
 
 type DashboardPageProps = {
   searchParams: Promise<{ from?: string; to?: string }>;
@@ -43,7 +44,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <h1 className="text-2xl font-bold text-foreground">
             Dashboard
           </h1>
-          <DateRangeFilter currentRange={dateRange} />
+          <div className="flex items-center gap-4">
+            <ExportarTransacoes transactions={transactions} />
+            <DateRangeFilter currentRange={dateRange} />
+          </div>
         </div>
 
         {/* Renderiza os cards usando as variáveis corrigidas acima */}

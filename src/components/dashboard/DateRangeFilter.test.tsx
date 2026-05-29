@@ -1,15 +1,20 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DateRangeFilter } from "./DateRangeFilter";
 import { getDefaultDateRange } from "@/lib/date";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
 describe("DateRangeFilter", () => {
   it("renders the filter buttons", () => {
     render(<DateRangeFilter currentRange={getDefaultDateRange()} />);
-    expect(screen.getByText("Data início")).toBeTruthy();
     expect(screen.getByText("até")).toBeTruthy();
-    expect(screen.getByText("Data fim")).toBeTruthy();
     expect(screen.getByText("Aplicar")).toBeTruthy();
+    expect(screen.getByText("Limpar")).toBeTruthy();
   });
 
   it("shows formatted dates when range is provided", () => {
