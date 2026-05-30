@@ -51,37 +51,29 @@ describe("TransactionsTable", () => {
     expect(screen.getByText(/^-/)).toBeTruthy();
   });
 
-  it("does not render empty state when there are transactions", () => {
-    render(<TransactionsTable transactions={[makeTransaction()]} />);
-    expect(screen.queryByText(/Nenhuma transação encontrada/)).toBeNull();
-  });
-
   it("renders edit and delete buttons for each row", () => {
     render(<TransactionsTable transactions={[makeTransaction()]} />);
     expect(screen.getByRole("button", { name: /editar/i })).toBeTruthy();
     expect(screen.getByRole("button", { name: /excluir/i })).toBeTruthy();
   });
 
-  it("calls window.confirm when delete button is clicked", () => {
-    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
-    render(<TransactionsTable transactions={[makeTransaction()]} />);
+  it("calls onEdit when edit button is clicked", () => {
+    const onEdit = vi.fn();
+    const transaction = makeTransaction({ id: "edit-me" });
+    render(<TransactionsTable transactions={[transaction]} onEdit={onEdit} />);
     
-    fireEvent.click(screen.getByRole("button", { name: /excluir/i }));
+    fireEvent.click(screen.getByRole("button", { name: /editar/i }));
     
-    expect(confirmSpy).toHaveBeenCalledWith("Tem certeza que deseja excluir esta transação?");
-    confirmSpy.mockRestore();
+    expect(onEdit).toHaveBeenCalledWith("edit-me");
   });
 
-  it("removes the item from the table when deletion is confirmed", () => {
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-    const transaction = makeTransaction({ id: "to-delete", description: "Delete Me" });
-    
-    render(<TransactionsTable transactions={[transaction]} />);
-    expect(screen.getByText("Delete Me")).toBeTruthy();
+  it("calls onDelete when delete button is clicked", () => {
+    const onDelete = vi.fn();
+    const transaction = makeTransaction({ id: "delete-me" });
+    render(<TransactionsTable transactions={[transaction]} onDelete={onDelete} />);
     
     fireEvent.click(screen.getByRole("button", { name: /excluir/i }));
     
-    expect(screen.queryByText("Delete Me")).toBeNull();
-    expect(screen.getByText(/Nenhuma transação encontrada/)).toBeTruthy();
+    expect(onDelete).toHaveBeenCalledWith("delete-me");
   });
 });

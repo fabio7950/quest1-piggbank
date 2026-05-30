@@ -3,7 +3,7 @@ import type { DateRange } from "@/types";
 import { getDefaultDateRange } from "@/lib/date";
 import { DateRangeFilter } from "@/components/dashboard/DateRangeFilter";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
-import { TransactionsTable } from "@/components/dashboard/TransactionsTable";
+import { TransactionsDashboard } from "@/components/dashboard/TransactionsDashboard";
 import { ExportarTransacoes } from "@/components/dashboard/ExportarTransacoes";
 
 type DashboardPageProps = {
@@ -57,9 +57,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <MetricsCard metric={expenseMetric} />
         </div>
 
-        <div className="rounded-xl border border-border bg-card">
-          <TransactionsTable transactions={transactions} />
-        </div>
+        <TransactionsDashboard initialTransactions={transactions} />
       </main>
     </div>
   );
