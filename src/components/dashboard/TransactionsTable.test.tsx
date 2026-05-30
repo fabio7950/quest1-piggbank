@@ -1,5 +1,5 @@
-import { describe, it, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 
 afterEach(cleanup);
 import { TransactionsTable } from "./TransactionsTable";
@@ -54,5 +54,34 @@ describe("TransactionsTable", () => {
   it("does not render empty state when there are transactions", () => {
     render(<TransactionsTable transactions={[makeTransaction()]} />);
     expect(screen.queryByText(/Nenhuma transação encontrada/)).toBeNull();
+  });
+
+  it("renders edit and delete buttons for each row", () => {
+    render(<TransactionsTable transactions={[makeTransaction()]} />);
+    expect(screen.getByRole("button", { name: /editar/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /excluir/i })).toBeTruthy();
+  });
+
+  it("calls window.confirm when delete button is clicked", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(<TransactionsTable transactions={[makeTransaction()]} />);
+    
+    fireEvent.click(screen.getByRole("button", { name: /excluir/i }));
+    
+    expect(confirmSpy).toHaveBeenCalledWith("Tem certeza que deseja excluir esta transação?");
+    confirmSpy.mockRestore();
+  });
+
+  it("removes the item from the table when deletion is confirmed", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const transaction = makeTransaction({ id: "to-delete", description: "Delete Me" });
+    
+    render(<TransactionsTable transactions={[transaction]} />);
+    expect(screen.getByText("Delete Me")).toBeTruthy();
+    
+    fireEvent.click(screen.getByRole("button", { name: /excluir/i }));
+    
+    expect(screen.queryByText("Delete Me")).toBeNull();
+    expect(screen.getByText(/Nenhuma transação encontrada/)).toBeTruthy();
   });
 });

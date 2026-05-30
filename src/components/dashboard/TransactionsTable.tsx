@@ -1,11 +1,35 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import type { Transaction } from "@/types";
 import { formatDisplayDate } from "@/lib/date";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
 
 type TransactionsTableProps = {
   transactions: Transaction[];
 };
 
-export function TransactionsTable({ transactions }: TransactionsTableProps) {
+export function TransactionsTable({
+  transactions: initialTransactions,
+}: TransactionsTableProps) {
+  const [transactions, setTransactions] = useState(initialTransactions);
+
+  useEffect(() => {
+    setTransactions(initialTransactions);
+  }, [initialTransactions]);
+
+  const handleEdit = (id: string) => {
+    // Placeholder para funcionalidade de edição
+    alert(`Editar transação: ${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Tem certeza que deseja excluir esta transação?")) {
+      setTransactions((prev) => prev.filter((t) => t.id !== id));
+    }
+  };
+
   if (transactions.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
@@ -30,6 +54,9 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
             </th>
             <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">
               Valor
+            </th>
+            <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Ações
             </th>
           </tr>
         </thead>
@@ -62,6 +89,29 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                   style: "currency",
                   currency: "BRL",
                 }).format(Math.abs(transaction.amount))}
+              </td>
+              <td className="px-4 py-3 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => handleEdit(transaction.id)}
+                    title="Editar"
+                    aria-label="Editar"
+                  >
+                    <Pencil />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => handleDelete(transaction.id)}
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    title="Excluir"
+                    aria-label="Excluir"
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
